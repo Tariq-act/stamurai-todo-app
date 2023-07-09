@@ -5,10 +5,10 @@ import Modal from './Modal';
 function TodoItem() {
   return (
     <>
-      <div className='w-full md:w-3/5 flex gap-5 items-center mx-auto bg-white rounded-md p-3 shadow-md '>
+      <div className='w-full flex gap-5 items-center mx-auto bg-white rounded-md p-3 shadow-md '>
         <div className=''>
-          <h3>Title 1</h3>
-          <p>
+          <h3 className=' font-medium'>Title 1</h3>
+          <p className='text-sm text-gray-600 '>
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quas,
             sint. Lorem ipsum dolor sit amet consectetur adipisicing
           </p>
