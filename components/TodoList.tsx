@@ -1,21 +1,30 @@
-import TodoItem from "./TodoItem";
+import TodoItem from './TodoItem';
+import { observer } from 'mobx-react';
+import { useRootStore } from '@/store';
+import { toJS } from 'mobx';
+import Modal from './Modal';
 
-function TodoList({ showModal, setShowModal }) {
-  const todoList = [{}];
+const TodoList = () => {
+  const { todoStore } = useRootStore();
+  const todos = toJS(todoStore.todos);
+  console.log(todos);
+
 
   return (
-    <div>
-      <ul className="flex flex-col gap-4 p-4 w-10/12 bg-white rounded-md md:w-[60%] lg:w-[50%] mx-auto">
-        <TodoItem />
-        <TodoItem />
-        <TodoItem />
-        <TodoItem />
-        <TodoItem />
-        <TodoItem />
-        <TodoItem />
-      </ul>
-    </div>
-  );
-}
+    <>
+      <ul className='flex flex-col gap-4 p-4 w-4/5 md:w-2/3 lg:w-3/6 bg-white rounded-md mx-auto '>
+        {todos.map((todo, index) => (
+          <TodoItem key={index} todo={todo} />
+        ))}
 
-export default TodoList;
+        {todos.length === 0 && <p>No todos found</p>}
+      </ul>
+
+      {
+        todoStore.isModalOpen && <Modal />
+      }
+    </>
+  );
+};
+
+export default observer(TodoList);
