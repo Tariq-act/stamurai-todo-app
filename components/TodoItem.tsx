@@ -3,21 +3,27 @@ import { observer } from 'mobx-react';
 import { TbEdit } from 'react-icons/tb';
 import Modal from './Modal';
 import { useRootStore } from '@/store';
-// import { Todo } from '@/store/store';
+import { Todo } from '@/store/store';
+import { useState } from 'react';
 
 // interface TodoItemProps {
 //   todo: Todo;
 // }
 
-function TodoItem<TodoItemProps>({ todo }: any) {
+const TodoItem: React.FC<Todo> = ({ todo }) => {
   const { todoStore } = useRootStore()
   const { id, title, description, status } = todo
   console.log({ id, title, description, status });
 
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
 
-  const editHandle = () => {
-    todoStore.editToggle(todo.id, todo);
+  const closeModal = () => {
+    setOpenEditModal(false)
   }
+  const openModal = () => {
+    setOpenEditModal(true)
+  }
+
 
 
   return (
@@ -35,7 +41,7 @@ function TodoItem<TodoItemProps>({ todo }: any) {
         </p>
 
         <div className='flex gap-3 text-white text-sm items-center'>
-          <button className='bg-green-600 p-1 rounded-md' onClick={editHandle}>
+          <button className='bg-green-600 p-1 rounded-md' onClick={openModal}>
             <TbEdit fontSize={'16px'} />
           </button>
           <button className='bg-red-600 p-1   rounded-md'>
@@ -43,7 +49,9 @@ function TodoItem<TodoItemProps>({ todo }: any) {
           </button>
         </div>
       </div>
-
+      {
+        openEditModal && <Modal mode='edit' close={closeModal} todo={todo} />
+      }
     </>
   );
 }

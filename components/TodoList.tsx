@@ -1,10 +1,13 @@
+'use client'
 import TodoItem from './TodoItem';
 import { observer } from 'mobx-react';
 import { useRootStore } from '@/store';
 import { toJS } from 'mobx';
 import Modal from './Modal';
+import { useState } from 'react';
 
 const TodoList = () => {
+
   const { todoStore } = useRootStore();
   const todos = toJS(todoStore.todos);
   console.log(todos);
@@ -20,9 +23,7 @@ const TodoList = () => {
         {todos.length === 0 && <p>No todos found</p>}
       </ul>
 
-      {
-        todoStore.isModalOpen && <Modal />
-      }
+
     </>
   );
 };

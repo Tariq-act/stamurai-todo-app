@@ -1,18 +1,28 @@
 'use client';
-import { SyntheticEvent, ChangeEvent, useState } from 'react';
+import React, { SyntheticEvent, ChangeEvent, useState } from 'react';
 import { observer } from 'mobx-react';
 
 import { RxCross2 } from 'react-icons/rx';
 import { useRootStore } from '@/store';
+import { Todo } from '@/store/store';
 
-function Modal() {
+interface ModalProps {
+  mode: string,
+  todo?: Todo,
+  close: () => void
+}
+
+const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
   const [state, setState] = useState({
-    title: '',
-    description: '',
-    status: '',
+    title: mode === 'edit' ? todo?.title : '',
+    description: mode === 'edit' ? todo?.description : '',
+    status: mode === 'edit' ? todo?.status : '',
   });
   const { todoStore } = useRootStore();
-  const isEdit = todoStore.isEdit;
+
+  console.log(todo);
+
+
 
   const handleChange = (e: ChangeEvent<EventTarget>): void => {
     let { name, value } = e.target as HTMLInputElement;
@@ -29,7 +39,12 @@ function Modal() {
       alert('Fill all the field properly')
       return
     }
-    todoStore.addTodo({ title, description, status })
+    if (mode === 'edit') {
+      // todoStore.editToggle(todo.id, { title, description, status });
+    } else {
+      todoStore.addTodo({ title, description, status })
+    }
+    close()
   }
 
   return (
@@ -38,12 +53,12 @@ function Modal() {
         <button
           type='button'
           className='absolute right-4 hover:bg-gray-200 rounded-full p-2 transition ease-linear'
-          onClick={todoStore.toggleModal}
+          onClick={close}
         >
           <RxCross2 />
         </button>
 
-        <h1 className='text-center font-medium text-lg '>{isEdit ? 'Edit Todo' : 'Add Todo'}</h1>
+        <h1 className='text-center font-medium text-lg '>{mode === 'edit' ? 'Edit Todo' : 'Add Todo'}</h1>
         <input
           name='title'
           value={state.title}
@@ -75,7 +90,7 @@ function Modal() {
           <option value='3'>completed</option>
         </select>
 
-        {isEdit ? (
+        {mode === 'edit' ? (
           <button
             type='submit'
             className='bg-green-700 text-white p-2 rounded-md'

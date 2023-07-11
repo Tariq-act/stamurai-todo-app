@@ -12,8 +12,7 @@ export interface Todo {
 class TodoStore {
 
   todos: Todo[] = observable.array([], { deep: true });
-  isModalOpen = false;
-  isEdit = false;
+
 
 
   constructor() {
@@ -22,22 +21,12 @@ class TodoStore {
 
   // @observable newProperty;
 
-  toggleModal = () => {
-    this.isModalOpen = !this.isModalOpen;
-    if (this.isEdit) {
-      this.isEdit = false
-    }
-    // this.editedTodoIndex = index;
-  }
 
   editToggle = (id: number, todo: Todo) => {
-    this.isEdit = !this.isEdit
+
     console.log(todo)
 
 
-    if (id) {
-      this.toggleModal()
-    }
   }
 
   addTodo = (todo: Omit<Todo, 'id'>) => {
@@ -47,7 +36,7 @@ class TodoStore {
     }
     this.todos.push(newTodo);
 
-    this.toggleModal()
+
   };
 
   removeTodo = (id: number) => {
