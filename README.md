@@ -22,7 +22,3 @@ pnpm dev
 ### For data persistent
 
 **LocalStorage** is use to storage the data
-
-### Store or State Management
-
-State management code, MobX stores, is placed in the /store directory with contextAPI. The store is organized into separate separate file.
