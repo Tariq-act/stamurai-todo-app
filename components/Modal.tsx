@@ -2,14 +2,16 @@
 import React, { SyntheticEvent, ChangeEvent, useState } from 'react';
 import { observer } from 'mobx-react';
 
+// Icon
 import { RxCross2 } from 'react-icons/rx';
+
 import { useRootStore } from '@/store';
 import { Todo } from '@/store/store';
 
 interface ModalProps {
-  mode: string,
-  todo?: Todo,
-  close: () => void
+  mode: string;
+  todo?: Todo;
+  close: () => void;
 }
 
 interface FormState {
@@ -22,13 +24,9 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
   const [state, setState] = useState<FormState>({
     title: mode === 'edit' ? todo?.title ?? '' : '',
     description: mode === 'edit' ? todo?.description ?? '' : '',
-    status: mode === 'edit' ? todo?.status ?? "" : '',
+    status: mode === 'edit' ? todo?.status ?? '' : '',
   });
   const { todoStore } = useRootStore();
-
-
-
-
 
   const handleChange = (e: ChangeEvent<EventTarget>): void => {
     let { name, value } = e.target as HTMLInputElement;
@@ -38,29 +36,12 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
     }));
   };
 
-  // const handleAddTodo = () => {
-  //   const { title, description, status } = state
-  //   todoStore.addTodo({ title, description, status })
-  // }
-
-  // const handleEditTodo = () => {
-  //   const { title, description, status } = state
-  //   const updatedTodo: Todo = {
-  //     id: todo.id,
-  //     title,
-  //     description,
-  //     status,
-  //   };
-  //   todoStore.editToggle(updatedTodo);
-  // }
-
-
   const handleSubmit = (e: SyntheticEvent) => {
-    e.preventDefault()
-    const { title, description, status } = state
+    e.preventDefault();
+    const { title, description, status } = state;
     if (title === '' || description == '' || status === '') {
-      alert('Fill all the field properly')
-      return
+      alert('Fill all the field properly');
+      return;
     }
 
     if (mode === 'edit' && todo) {
@@ -70,14 +51,12 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
         description,
         status,
       };
-      todoStore.editToggle(updatedTodo);
-      console.log(state);
-
+      todoStore.updateTodo(updatedTodo);
     } else {
-      todoStore.addTodo({ title, description, status })
+      todoStore.addTodo({ title, description, status });
     }
-    close()
-  }
+    close();
+  };
 
   return (
     <div className='absolute top-0 left-0 w-full h-full bg-black bg-opacity-25 flex items-center justify-center '>
@@ -90,7 +69,9 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
           <RxCross2 />
         </button>
 
-        <h1 className='text-center font-medium text-lg '>{mode === 'edit' ? 'Edit Todo' : 'Add Todo'}</h1>
+        <h1 className='text-center font-medium text-lg '>
+          {mode === 'edit' ? 'Edit Todo' : 'Add Todo'}
+        </h1>
         <input
           name='title'
           value={state.title}
@@ -116,7 +97,10 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
           id=''
           className='border-2 outline-none p-2 rounded-md'
         >
-          <option value="" disabled> Select </option>
+          <option value='' disabled>
+            {' '}
+            Select{' '}
+          </option>
           <option value='1'>Todo</option>
           <option value='2'>progress</option>
           <option value='3'>completed</option>
@@ -126,17 +110,22 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
           <button
             type='submit'
             className='bg-green-700 text-white p-2 rounded-md'
-            onClick={handleSubmit} >
+            onClick={handleSubmit}
+          >
             Update Todo
           </button>
         ) : (
-          <button type='submit' className='bg-black text-white p-2 rounded-md' onClick={handleSubmit}>
+          <button
+            type='submit'
+            className='bg-black text-white p-2 rounded-md'
+            onClick={handleSubmit}
+          >
             Add Todo
           </button>
         )}
       </form>
     </div>
   );
-}
+};
 
 export default observer(Modal);
