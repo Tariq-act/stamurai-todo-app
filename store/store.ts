@@ -1,4 +1,6 @@
+'use client'
 import { makeAutoObservable, observable } from "mobx";
+import { useEffect } from "react";
 
 
 export interface Todo {
@@ -16,16 +18,58 @@ class TodoStore {
 
 
   constructor() {
-    makeAutoObservable(this)
+    makeAutoObservable(this);
+    // if (typeof window !== 'undefined') {
+    this.hydrate();
+    // }
   }
+
+  // // Save todos to local storage
+  // private saveToLocalStorage = () => {
+  //   if (typeof localStorage !== 'undefined') {
+  //     localStorage.setItem('todos', JSON.stringify(this.todos));
+  //   }
+  // };
+
+  // // Hydrate todos from local storage
+  // private hydrate = () => {
+  //   if (typeof localStorage !== 'undefined') {
+  //     const savedTodos = localStorage.getItem('todos');
+  //     if (savedTodos) {
+  //       this.todos = JSON.parse(savedTodos);
+  //     }
+  //   }
+  // };
+
+
+  private hydrate() {
+
+
+    const persistedTodoStore = localStorage.getItem('todoStore');
+    if (persistedTodoStore) {
+      const parsedTodos = JSON.parse(persistedTodoStore);
+      this.todos = parsedTodos;
+    }
+  }
+
+  private persist() {
+    const todoStoreData = JSON.stringify(this.todos);
+    localStorage.setItem('todoStore', todoStoreData);
+  }
+
 
   // @observable newProperty;
 
 
-  editToggle = (id: number, todo: Todo) => {
+  editToggle = (updatedTodo: Todo) => {
 
-    console.log(todo)
-
+    const todo = this.todos.find((todo) => todo.id === updatedTodo.id);
+    if (todo) {
+      todo.title = updatedTodo.title;
+      todo.description = updatedTodo.description;
+      todo.status = updatedTodo.status;
+    }
+    this.persist(); // Update local storage
 
   }
 
@@ -36,39 +80,13 @@ class TodoStore {
     }
     this.todos.push(newTodo);
 
-
+    this.persist(); // Update local storage
   };
 
   removeTodo = (id: number) => {
     this.todos = this.todos.filter((todo) => todo.id !== id);
+    this.persist(); // Update local storage
   };
-
-  updateTodoStatus = (id: number, status: string) => {
-    const todo = this.todos.find((todo) => todo.id === id);
-    if (todo) {
-      todo.status = status;
-    }
-  };
-
-  updateTodo = (id: number, updatedTodo: Omit<Todo, 'id'>) => {
-    const todo = this.todos.find((todo) => todo.id === id);
-    if (todo) {
-      todo.title = updatedTodo.title;
-      todo.description = updatedTodo.description;
-    }
-  };
-
-
-
-
-
-
-
-
-  // updateTodo = (updatedTodo, id: number) => {
-  //   this.todos[this.editedTodoIndex] = updatedTodo;
-  //   this.closeModal();
-  // }
 
 
 

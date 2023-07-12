@@ -6,54 +6,63 @@ import { useRootStore } from '@/store';
 import { Todo } from '@/store/store';
 import { useState } from 'react';
 
-// interface TodoItemProps {
-//   todo: Todo;
-// }
+interface TodoItemProps {
+  todo: Todo;
+}
 
-const TodoItem: React.FC<Todo> = ({ todo }) => {
-  const { todoStore } = useRootStore()
-  const { id, title, description, status } = todo
-  console.log({ id, title, description, status });
-
+const TodoItem: React.FC<TodoItemProps> = ({ todo }) => {
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
 
+  const { todoStore } = useRootStore();
+  const { id, title, description, status } = todo;
+
+  const deleteTodo = () => {
+    todoStore.removeTodo(id)
+  }
+
   const closeModal = () => {
-    setOpenEditModal(false)
-  }
+    setOpenEditModal(false);
+  };
   const openModal = () => {
-    setOpenEditModal(true)
-  }
+    setOpenEditModal(true);
+  };
+
+  const statusColor = (where: string) => (status && status === '1' ? `${where}-blue-600` : status == '2' ? `${where}-yellow-500` : `${where}-green-600`)
+
 
 
 
   return (
     <>
-      <div className='w-full flex gap-5 items-center justify-between mx-auto bg-white rounded-md p-3 shadow-md '>
-        <div className=''>
-          <h3 className=' font-medium'> {title}</h3>
-          <p className='text-sm text-gray-600 '>
-            {description}
-          </p>
+      <li className='w-full flex gap-5 items-center justify-between mx-auto bg-white rounded-md p-3 shadow-md '>
+
+        <div className='flex flex-col w-1/2'>
+          <h3 className=' font-medium underline capitalize'> {title}</h3>
+          <p className='text-sm break-words text-gray-600 '>{description}</p>
         </div>
-        <p className='flex items-center gap-1'>
-          <span className='w-2 h-2 rounded-full bg-black'></span>
-          {status}
+        <p className={`flex w-1/2 items-center gap-1 ${statusColor('text')}`
+        }>
+          <span className={`w-2 h-2 rounded-full ${statusColor('bg')}`}></span>
+          {status === '1' && 'todo'}
+          {status === '2' && 'progress'}
+          {status === '3' && 'completed'}
         </p>
 
-        <div className='flex gap-3 text-white text-sm items-center'>
+
+        <div className='flex  w-1/3 gap-3 text-white text-sm items-center justify-end' >
           <button className='bg-green-600 p-1 rounded-md' onClick={openModal}>
             <TbEdit fontSize={'16px'} />
           </button>
-          <button className='bg-red-600 p-1   rounded-md'>
+          <button className='bg-red-600 p-1 rounded-md' onClick={deleteTodo} >
             <TiDelete fontSize={'16px'} />
           </button>
         </div>
-      </div>
+      </li >
       {
         openEditModal && <Modal mode='edit' close={closeModal} todo={todo} />
       }
     </>
   );
-}
+};
 
 export default observer(TodoItem);

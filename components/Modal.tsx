@@ -12,15 +12,21 @@ interface ModalProps {
   close: () => void
 }
 
+interface FormState {
+  title: string;
+  description: string;
+  status: string;
+}
+
 const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
-  const [state, setState] = useState({
-    title: mode === 'edit' ? todo?.title : '',
-    description: mode === 'edit' ? todo?.description : '',
-    status: mode === 'edit' ? todo?.status : '',
+  const [state, setState] = useState<FormState>({
+    title: mode === 'edit' ? todo?.title ?? '' : '',
+    description: mode === 'edit' ? todo?.description ?? '' : '',
+    status: mode === 'edit' ? todo?.status ?? "" : '',
   });
   const { todoStore } = useRootStore();
 
-  console.log(todo);
+
 
 
 
@@ -32,6 +38,23 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
     }));
   };
 
+  // const handleAddTodo = () => {
+  //   const { title, description, status } = state
+  //   todoStore.addTodo({ title, description, status })
+  // }
+
+  // const handleEditTodo = () => {
+  //   const { title, description, status } = state
+  //   const updatedTodo: Todo = {
+  //     id: todo.id,
+  //     title,
+  //     description,
+  //     status,
+  //   };
+  //   todoStore.editToggle(updatedTodo);
+  // }
+
+
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault()
     const { title, description, status } = state
@@ -39,8 +62,17 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
       alert('Fill all the field properly')
       return
     }
-    if (mode === 'edit') {
-      // todoStore.editToggle(todo.id, { title, description, status });
+
+    if (mode === 'edit' && todo) {
+      const updatedTodo: Todo = {
+        id: todo.id,
+        title,
+        description,
+        status,
+      };
+      todoStore.editToggle(updatedTodo);
+      console.log(state);
+
     } else {
       todoStore.addTodo({ title, description, status })
     }
@@ -94,7 +126,7 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
           <button
             type='submit'
             className='bg-green-700 text-white p-2 rounded-md'
-          >
+            onClick={handleSubmit} >
             Update Todo
           </button>
         ) : (
