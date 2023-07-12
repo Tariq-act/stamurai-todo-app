@@ -1,4 +1,3 @@
-'use client';
 import { makeAutoObservable, observable } from 'mobx';
 
 export interface Todo {
@@ -9,7 +8,7 @@ export interface Todo {
 }
 
 class TodoStore {
-  todos: Todo[] = observable.array([], { deep: true });
+  todos: Todo[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -20,8 +19,7 @@ class TodoStore {
   private hydrate() {
     const persistedTodoStore = localStorage.getItem('todoStore');
     if (persistedTodoStore) {
-      const parsedTodos = JSON.parse(persistedTodoStore);
-      this.todos = parsedTodos;
+      this.todos = JSON.parse(persistedTodoStore);
     }
   }
 
@@ -44,9 +42,7 @@ class TodoStore {
   updateTodo = (updatedTodo: Todo) => {
     const todo = this.todos.find((todo) => todo.id === updatedTodo.id);
     if (todo) {
-      todo.title = updatedTodo.title;
-      todo.description = updatedTodo.description;
-      todo.status = updatedTodo.status;
+      Object.assign(todo, updatedTodo);
     }
     this.persist(); // Update local storage
   };
@@ -59,7 +55,7 @@ class TodoStore {
   };
 }
 
-// const todoStore = new TodoStore();
 // export default todoStore
+// const todoStore = new TodoStore();
 
 export default TodoStore;

@@ -1,21 +1,20 @@
 'use client'
+import { useState } from 'react';
+import { observer } from 'mobx-react-lite';
 
-import TodoList from '@/components/TodoList'
 import { HiPlus } from 'react-icons/hi'
 
-import { useRootStore } from '@/store'; import { observer } from 'mobx-react-lite';
-import { useState } from 'react';
 import Modal from '@/components/Modal';
+import TodoList from '@/components/TodoList'
 
 const Home = () => {
   const [openAddModal, setAddModal] = useState(false)
-  const { todoStore } = useRootStore()
 
   const closeModal = () => {
     setAddModal(false)
   }
-  
-  const openModal =()=>{
+
+  const openModal = () => {
     setAddModal(true)
   }
 
