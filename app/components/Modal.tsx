@@ -1,11 +1,13 @@
 'use client';
 import React, { SyntheticEvent, ChangeEvent, useState } from 'react';
 import { observer } from 'mobx-react';
+import { useRouter } from 'next/navigation';
 
 // Icon
 import { RxCross2 } from 'react-icons/rx';
 
-import { useRootStore } from '@/store';
+
+import { todoStore } from '@/store/store';
 import { Todo } from '@/store/store';
 
 interface ModalProps {
@@ -26,7 +28,6 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
     description: mode === 'edit' ? todo?.description ?? '' : '',
     status: mode === 'edit' ? todo?.status ?? '' : '',
   });
-  const { todoStore } = useRootStore();
 
   const handleChange = (e: ChangeEvent<EventTarget>): void => {
     let { name, value } = e.target as HTMLInputElement;
@@ -34,9 +35,9 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
       ...prev,
       [name]: value,
     }));
-  };
+  }; const router = useRouter()
 
-  const handleSubmit = (e: SyntheticEvent) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
     const { title, description, status } = state;
     if (title === '' || description == '' || status === '') {
@@ -51,10 +52,17 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
         description,
         status,
       };
-      todoStore.updateTodo(updatedTodo);
+
+      // Update Todo
+      await todoStore.updateTodo(Number(todo.id), updatedTodo);
+      router.refresh()
     } else {
-      todoStore.addTodo({ title, description, status });
+      // Create Todo
+      await todoStore.createTodo({ title, description, status });
+      router.refresh()
     }
+
+    // Closing the modal
     close();
   };
 

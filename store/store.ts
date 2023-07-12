@@ -1,7 +1,7 @@
-import { action, makeAutoObservable, observable } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 
 export interface Todo {
-  id: number;
+  id?: number | string;
   title: string;
   description: string;
   status: string;
@@ -12,80 +12,74 @@ class TodoStore {
 
   constructor() {
     makeAutoObservable(this);
-    if (typeof window !== 'undefined') {
-      this.loadFromLocalStorage();
+  }
+
+  fetchTodos = async () => {
+    try {
+      const response = await fetch('https://64af0311c85640541d4e0704.mockapi.io/api/todos');
+      const data = await response.json();
+      action(() => { this.todos = data })();
+      console.log(data);
+
+    } catch (error) {
+      console.error('Error fetching todos:', error);
     }
   }
 
-  saveToLocalStorage = () => {
+
+  createTodo = action(async (todoData: Todo) => {
     try {
-      localStorage.setItem('todoStore', JSON.stringify(this.todos));
+      const response = await fetch('https://64af0311c85640541d4e0704.mockapi.io/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(todoData),
+      });
+      const createdTodo = await response.json();
+      action(() => {
+        this.todos.push(createdTodo);
+      })();
     } catch (error) {
-      console.error('Error saving to local storage:', error);
+      console.error('Error creating todo:', error);
     }
-  };
+  })
 
-  loadFromLocalStorage = () => {
+  async updateTodo(todoId: number, updatedTodoData: Todo) {
     try {
-      const storedData = localStorage.getItem('todoStore');
-      if (storedData) {
-        this.todos = JSON.parse(storedData);
-      }
+      const response = await fetch(`https://64af0311c85640541d4e0704.mockapi.io/api/todos/${todoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedTodoData),
+      });
+      const updatedTodo = await response.json();
+      action(() => {
+        const index = this.todos.findIndex((todo) => todo.id === todoId);
+        if (index !== -1) {
+          this.todos[index] = updatedTodo;
+        }
+      })();
     } catch (error) {
-      console.error('Error loading from local storage:', error);
+      console.error('Error updating todo:', error);
     }
-  };
+  }
 
-  // Hydrate / Get todo from the localStorage
-
-  // private hydrate() {
-  //   if (typeof window !== 'undefined' && window.localStorage) {
-  //     const persistedTodoStore = localStorage.getItem('todoStore');
-  //     if (persistedTodoStore) {
-  //       this.todos = JSON.parse(persistedTodoStore);
-  //     }
-  //   }
-  // }
-
-  // Save todo in the localStorage
-  // private persist() {
-  //   const todoStoreData = JSON.stringify(this.todos);
-  //   localStorage.setItem('todoStore', todoStoreData);
-  // }
-
-
-  addTodo = (todo: Omit<Todo, 'id'>) => {
-    const newTodo: Todo = {
-      id: Math.floor(Math.random() * 1000000),
-      ...todo,
-    };
-    this.todos.push(newTodo);
-    if (typeof window !== 'undefined') {
-      this.saveToLocalStorage();
-    } // Update local storage
-  };
-
-  updateTodo = (updatedTodo: Todo) => {
-    const todo = this.todos.find((todo) => todo.id === updatedTodo.id);
-    if (todo) {
-      Object.assign(todo, updatedTodo);
+  async deleteTodo(todoId: number) {
+    try {
+      await fetch(`https://64af0311c85640541d4e0704.mockapi.io/api/todos/${todoId}`, {
+        method: 'DELETE',
+      });
+      action(() => {
+        this.todos = this.todos.filter((todo) => todo.id !== todoId);
+      })();
+    } catch (error) {
+      console.error('Error deleting todo:', error);
     }
-    if (typeof window !== 'undefined') {
-      this.saveToLocalStorage();
-    } // Update local storage
-  };
-
-
-
-  removeTodo = (id: number) => {
-    this.todos = this.todos.filter((todo) => todo.id !== id);
-    if (typeof window !== 'undefined') {
-      this.saveToLocalStorage();
-    } // Update local storage
-  };
+  }
 }
 
-// export default todoStore
-// export const todoStore = new TodoStore();
 
+// export default todoStore
 export default TodoStore;
+
+
+export const todoStore = new TodoStore();
+
