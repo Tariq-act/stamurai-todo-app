@@ -1,4 +1,4 @@
-import { makeAutoObservable, observable } from 'mobx';
+import { action, makeAutoObservable, observable } from 'mobx';
 
 export interface Todo {
   id: number;
@@ -12,22 +12,46 @@ class TodoStore {
 
   constructor() {
     makeAutoObservable(this);
-    this.hydrate();
-  }
-
-  // Hydrate / Get todo from the localStorage
-  private hydrate() {
-    const persistedTodoStore = localStorage.getItem('todoStore');
-    if (persistedTodoStore) {
-      this.todos = JSON.parse(persistedTodoStore);
+    if (typeof window !== 'undefined') {
+      this.loadFromLocalStorage();
     }
   }
 
+  saveToLocalStorage = () => {
+    try {
+      localStorage.setItem('todoStore', JSON.stringify(this.todos));
+    } catch (error) {
+      console.error('Error saving to local storage:', error);
+    }
+  };
+
+  loadFromLocalStorage = () => {
+    try {
+      const storedData = localStorage.getItem('todoStore');
+      if (storedData) {
+        this.todos = JSON.parse(storedData);
+      }
+    } catch (error) {
+      console.error('Error loading from local storage:', error);
+    }
+  };
+
+  // Hydrate / Get todo from the localStorage
+
+  // private hydrate() {
+  //   if (typeof window !== 'undefined' && window.localStorage) {
+  //     const persistedTodoStore = localStorage.getItem('todoStore');
+  //     if (persistedTodoStore) {
+  //       this.todos = JSON.parse(persistedTodoStore);
+  //     }
+  //   }
+  // }
+
   // Save todo in the localStorage
-  private persist() {
-    const todoStoreData = JSON.stringify(this.todos);
-    localStorage.setItem('todoStore', todoStoreData);
-  }
+  // private persist() {
+  //   const todoStoreData = JSON.stringify(this.todos);
+  //   localStorage.setItem('todoStore', todoStoreData);
+  // }
 
 
   addTodo = (todo: Omit<Todo, 'id'>) => {
@@ -36,7 +60,9 @@ class TodoStore {
       ...todo,
     };
     this.todos.push(newTodo);
-    this.persist(); // Update local storage
+    if (typeof window !== 'undefined') {
+      this.saveToLocalStorage();
+    } // Update local storage
   };
 
   updateTodo = (updatedTodo: Todo) => {
@@ -44,18 +70,22 @@ class TodoStore {
     if (todo) {
       Object.assign(todo, updatedTodo);
     }
-    this.persist(); // Update local storage
+    if (typeof window !== 'undefined') {
+      this.saveToLocalStorage();
+    } // Update local storage
   };
 
 
 
   removeTodo = (id: number) => {
     this.todos = this.todos.filter((todo) => todo.id !== id);
-    this.persist(); // Update local storage
+    if (typeof window !== 'undefined') {
+      this.saveToLocalStorage();
+    } // Update local storage
   };
 }
 
 // export default todoStore
-// const todoStore = new TodoStore();
+// export const todoStore = new TodoStore();
 
 export default TodoStore;
