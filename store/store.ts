@@ -18,14 +18,13 @@ class TodoStore {
     try {
       const response = await fetch('https://64af0311c85640541d4e0704.mockapi.io/api/todos');
       const data = await response.json();
-      action(() => { this.todos = data })();
-      console.log(data);
-
+      action(() => {
+        this.todos = data;
+      })();
     } catch (error) {
       console.error('Error fetching todos:', error);
     }
-  }
-
+  };
 
   createTodo = action(async (todoData: Todo) => {
     try {
@@ -35,15 +34,13 @@ class TodoStore {
         body: JSON.stringify(todoData),
       });
       const createdTodo = await response.json();
-      action(() => {
-        this.todos.push(createdTodo);
-      })();
+      this.todos.push(createdTodo);
     } catch (error) {
       console.error('Error creating todo:', error);
     }
-  })
+  });
 
-  updateTodo = action(async (todoId: string, updatedTodoData: Todo) => {
+  updateTodo = action(async (todoId: number, updatedTodoData: Todo) => {
     try {
       const response = await fetch(`https://64af0311c85640541d4e0704.mockapi.io/api/todos/${todoId}`, {
         method: 'PUT',
@@ -51,37 +48,25 @@ class TodoStore {
         body: JSON.stringify(updatedTodoData),
       });
       const updatedTodo = await response.json();
-      console.log(updatedTodo);
-
-      // action(() => {
       const index = this.todos.findIndex((todo) => todo.id === todoId);
       if (index !== -1) {
         this.todos[index] = updatedTodo;
       }
-      // })();
     } catch (error) {
       console.error('Error updating todo:', error);
     }
-  })
+  });
 
   deleteTodo = action(async (todoId: number) => {
     try {
       await fetch(`https://64af0311c85640541d4e0704.mockapi.io/api/todos/${todoId}`, {
         method: 'DELETE',
       });
-      // action(() => {
       this.todos = this.todos.filter((todo) => todo.id !== todoId);
-      // })();
     } catch (error) {
       console.error('Error deleting todo:', error);
     }
-  })
+  });
 }
 
-
-// export default todoStore
-export default TodoStore;
-
-
 export const todoStore = new TodoStore();
-

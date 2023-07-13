@@ -1,6 +1,6 @@
 'use client';
 import React, { SyntheticEvent, ChangeEvent, useState } from 'react';
-import { observer } from 'mobx-react';
+import { observer } from 'mobx-react-lite';
 import { useRouter } from 'next/navigation';
 
 // Icon
@@ -36,7 +36,7 @@ const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
       [name]: value,
     }));
   };
-  //  const router = useRouter()
+  const router = useRouter()
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -55,8 +55,10 @@ const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
       };
 
       // Update Todo
-      await todoStore.updateTodo(todo.id, updatedTodo);
-      // router.refresh()
+      console.log(typeof todo.id);
+
+      await todoStore.updateTodo(Number(todo.id), updatedTodo);
+      router.refresh()
     } else {
       // Create Todo
       await todoStore.createTodo({ title, description, status });
