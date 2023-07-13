@@ -12,7 +12,7 @@ import { Todo } from '@/store/store';
 
 interface ModalProps {
   mode: string;
-  todo?: Todo;
+  todo?: Todo | null;
   close: () => void;
 }
 
@@ -22,7 +22,7 @@ interface FormState {
   status: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
+const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
   const [state, setState] = useState<FormState>({
     title: mode === 'edit' ? todo?.title ?? '' : '',
     description: mode === 'edit' ? todo?.description ?? '' : '',
@@ -35,7 +35,8 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
       ...prev,
       [name]: value,
     }));
-  }; const router = useRouter()
+  };
+  //  const router = useRouter()
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -47,19 +48,19 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
 
     if (mode === 'edit' && todo) {
       const updatedTodo: Todo = {
-        id: todo.id,
+        id: todo?.id ?? 0,
         title,
         description,
         status,
       };
 
       // Update Todo
-      await todoStore.updateTodo(Number(todo.id), updatedTodo);
-      router.refresh()
+      await todoStore.updateTodo(todo.id, updatedTodo);
+      // router.refresh()
     } else {
       // Create Todo
       await todoStore.createTodo({ title, description, status });
-      router.refresh()
+      // router.refresh()
     }
 
     // Closing the modal
@@ -134,6 +135,6 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
       </form>
     </div>
   );
-};
+});
 
-export default observer(Modal);
+export default Modal;

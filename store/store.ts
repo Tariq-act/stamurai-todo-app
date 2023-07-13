@@ -43,7 +43,7 @@ class TodoStore {
     }
   })
 
-  updateTodo = action(async (todoId: number, updatedTodoData: Todo) => {
+  updateTodo = action(async (todoId: string, updatedTodoData: Todo) => {
     try {
       const response = await fetch(`https://64af0311c85640541d4e0704.mockapi.io/api/todos/${todoId}`, {
         method: 'PUT',
@@ -51,6 +51,8 @@ class TodoStore {
         body: JSON.stringify(updatedTodoData),
       });
       const updatedTodo = await response.json();
+      console.log(updatedTodo);
+
       // action(() => {
       const index = this.todos.findIndex((todo) => todo.id === todoId);
       if (index !== -1) {
