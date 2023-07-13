@@ -1,8 +1,10 @@
 import './globals.css'
 import type { Metadata } from 'next'
+import { Provider } from 'mobx-react'
 import { Inter } from 'next/font/google'
 
 import Navbar from '@/app/components/Navbar'
+import { todoStore } from '@/store/store'
 
 const inter = Inter({ subsets: ['latin'] })
 

@@ -12,7 +12,7 @@ const TodoList = () => {
   useEffect(() => {
     todoStore.fetchTodos()
 
-  }, [])
+  }, [todoStore])
 
 
   return (
