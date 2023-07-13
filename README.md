@@ -21,7 +21,10 @@ pnpm dev
 
 ### For data persistent
 
-**LocalStorage** is use to storage the data
+**_Mock API_** is use for store data
+
+API Link
+[GET all todos](https://64af0311c85640541d4e0704.mockapi.io/api/todos)
 
 ### Store or State Management
 
