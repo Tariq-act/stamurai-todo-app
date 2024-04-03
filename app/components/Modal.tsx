@@ -1,11 +1,9 @@
 'use client';
 import React, { SyntheticEvent, ChangeEvent, useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { useRouter } from 'next/navigation';
+import { observer } from 'mobx-react';
 
 // Icon
 import { RxCross2 } from 'react-icons/rx';
-
 
 import { todoStore } from '@/store/store';
 import { Todo } from '@/store/store';
@@ -22,7 +20,7 @@ interface FormState {
   status: string;
 }
 
-const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
+const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
   const [state, setState] = useState<FormState>({
     title: mode === 'edit' ? todo?.title ?? '' : '',
     description: mode === 'edit' ? todo?.description ?? '' : '',
@@ -36,7 +34,6 @@ const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
       [name]: value,
     }));
   };
-  const router = useRouter()
 
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault();
@@ -48,21 +45,19 @@ const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
 
     if (mode === 'edit' && todo) {
       const updatedTodo: Todo = {
-        id: todo?.id ?? 0,
+        id: todo?.id,
         title,
         description,
         status,
       };
 
       // Update Todo
-      console.log(typeof todo.id);
-
       await todoStore.updateTodo(Number(todo.id), updatedTodo);
-      router.refresh()
+      await todoStore.fetchTodos();
     } else {
       // Create Todo
       await todoStore.createTodo({ title, description, status });
-      // router.refresh()
+      await todoStore.fetchTodos();
     }
 
     // Closing the modal
@@ -137,6 +132,6 @@ const Modal: React.FC<ModalProps> = observer(({ mode, todo, close }) => {
       </form>
     </div>
   );
-});
+};
 
-export default Modal;
+export default observer(Modal);
