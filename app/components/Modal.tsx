@@ -59,6 +59,11 @@ const Modal: React.FC<ModalProps> = ({ mode, todo, close }) => {
       await todoStore.createTodo({ title, description, status });
       await todoStore.fetchTodos();
     }
+    setState({
+        title:'',
+        description:'',
+        status:'',
+    })
 
     // Closing the modal
     close();
